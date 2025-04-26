@@ -1,0 +1,48 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+/* Custom smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+/* Safe area padding for mobile devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+/* Prevent overscroll behavior */
+.overflow-auto {
+  overscroll-behavior: contain;
+}
+/* Improve transitions */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+/* Smooth appearance for elements */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Better mobile scrolling */
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+/* Prevent text selection during transitions */
+.transition-all {
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Improve touch interactions */
+@media (hover: none) {
+  .touch-action-manipulation {
+    touch-action: manipulation;
+  }
+}
