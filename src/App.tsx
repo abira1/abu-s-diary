@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -20,6 +20,15 @@ import AdminNotes from './pages/admin/AdminNotes';
 import AdminMusic from './pages/admin/AdminMusic';
 import { useAuth } from './lib/hooks/useAuth';
 import { useFirebaseData } from './lib/hooks/useFirebase';
+import { listenToMessages } from '@/lib/listenMessages';
+
+import { Message } from './types';
+
+export const MessageContext = React.createContext({ messages: [], setMessages: (messages: Message[]) => {} });
+export const useMessages = () => useContext(MessageContext);
+
+
+
 const isCountdownComplete = (countdownData: {
   targetDate: string;
   isEnabled: boolean;
@@ -73,44 +82,57 @@ const ProtectedAdminRoute = ({
   return <>{children}</>;
 };
 export function App() {
-  return <Router>
-      <Routes>
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/*" element={<ProtectedAdminRoute>
-              <AdminLayout />
-            </ProtectedAdminRoute>}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="countdown" element={<AdminCountdown />} />
-          <Route path="messages" element={<AdminMessages />} />
-          <Route path="gallery" element={<AdminGallery />} />
-          <Route path="games" element={<AdminGames />} />
-          <Route path="notes" element={<AdminNotes />} />
-          <Route path="music" element={<AdminMusic />} />
-        </Route>
-        <Route path="/" element={<Layout />}>
-          <Route path="countdown" element={<Countdown />} />
-          <Route index element={<ProtectedRoute>
-                <Home />
-              </ProtectedRoute>} />
-          <Route path="surprise-message" element={<ProtectedRoute>
-                <SurpriseMessage />
-              </ProtectedRoute>} />
-          <Route path="gallery" element={<ProtectedRoute>
-                <Gallery />
-              </ProtectedRoute>} />
-          <Route path="games" element={<ProtectedRoute>
-                <GameList />
-              </ProtectedRoute>} />
-          <Route path="games/:id" element={<ProtectedRoute>
-                <GamePlay />
-              </ProtectedRoute>} />
-          <Route path="chat" element={<ProtectedRoute>
-                <Chat />
-              </ProtectedRoute>} />
-          <Route path="notes" element={<ProtectedRoute>
-                <Notes />
-              </ProtectedRoute>} />
-        </Route>
-      </Routes>
-    </Router>;
+  const [messages, setMessages] = useState<Message[]>([]);
+  
+  useEffect(() => {
+    listenToMessages('room1', (newMessage) => {
+      console.log('Received new message:', newMessage);
+      setMessages(prevMessages => [...prevMessages, { ...newMessage, id: Date.now() }]);
+   });
+  }, []);
+
+  return (
+    <Router>
+      <MessageContext.Provider value={{ messages, setMessages }}>
+        <Routes>
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/*" element={<ProtectedAdminRoute>
+                <AdminLayout />
+              </ProtectedAdminRoute>}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="countdown" element={<AdminCountdown />} />
+            <Route path="messages" element={<AdminMessages />} />
+            <Route path="gallery" element={<AdminGallery />} />
+            <Route path="games" element={<AdminGames />} />
+            <Route path="notes" element={<AdminNotes />} />
+            <Route path="music" element={<AdminMusic />} />
+          </Route>
+          <Route path="/" element={<Layout />}>
+            <Route path="countdown" element={<Countdown />} />
+            <Route index element={<ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>} />
+            <Route path="surprise-message" element={<ProtectedRoute>
+                  <SurpriseMessage />
+                </ProtectedRoute>} />
+            <Route path="gallery" element={<ProtectedRoute>
+                  <Gallery />
+                </ProtectedRoute>} />
+            <Route path="games" element={<ProtectedRoute>
+                  <GameList />
+                </ProtectedRoute>} />
+            <Route path="games/:id" element={<ProtectedRoute>
+                  <GamePlay />
+                </ProtectedRoute>} />
+            <Route path="chat" element={<ProtectedRoute>
+                  <Chat />
+                </ProtectedRoute>} />
+            <Route path="notes" element={<ProtectedRoute>
+                  <Notes />
+                </ProtectedRoute>} />
+          </Route>
+        </Routes>
+      </MessageContext.Provider>
+    </Router>
+  );
 }

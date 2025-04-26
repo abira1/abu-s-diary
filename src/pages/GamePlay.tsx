@@ -57,9 +57,9 @@ const GamePlay = () => {
         {embedError ? <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#f8f0e3] text-[#a67c52]">
             <p className="text-lg font-bold mb-2">Oops!</p>
             <p className="text-sm">Unable to load the game</p>
-          </div> : game.embedCode ? <div dangerouslySetInnerHTML={{
+          </div> : game.embedCode ? <div dangerouslySetInnerHTML={ {
         __html: game.embedCode
-      }} className={`w-full h-full transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`} /> : <iframe src={game.embedUrl} className={`w-full h-full border-0 transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms" onLoad={handleIframeLoad} onError={handleIframeError} />}
+      } } className={`w-full h-full transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`} /> : <iframe src={game.embedUrl} className={`w-full h-full border-0 transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen sandbox="allow-scripts allow-popups allow-forms" onLoad={handleIframeLoad} onError={handleIframeError} />}
       </div>;
   };
   return <div className="max-w-4xl mx-auto px-4">

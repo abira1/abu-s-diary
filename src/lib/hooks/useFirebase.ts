@@ -1,14 +1,18 @@
-import { ref, set, get, onValue, off } from 'firebase/database';
-import { database } from '../firebase';
+import { ref, get, onValue, off, getDatabase, Database } from 'firebase/database';
+import { app } from '../firebase';
+import { safeSave } from '../FirebaseService';
 import { useEffect, useState } from 'react';
+
+const database: Database = getDatabase(app);
 export function useFirebaseData<T>(path: string, defaultValue: T) {
   const [data, setData] = useState<T>(defaultValue);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
+    useEffect(() => {
     const dbRef = ref(database, path);
     // Set up real-time listener
     onValue(dbRef, snapshot => {
       const value = snapshot.val();
+      console.log("Data updated for path:", path, "Value:", value);
       setData(value || defaultValue);
       setLoading(false);
     });
@@ -19,17 +23,18 @@ export function useFirebaseData<T>(path: string, defaultValue: T) {
   }, [path, defaultValue]);
   const updateData = async (newData: T) => {
     const dbRef = ref(database, path);
-    await set(dbRef, newData);
+    console.log('Updating data for path:', path, 'New data:', newData);
+    await safeSave(dbRef, newData);
   };
   return {
     data,
     loading,
-    updateData
+    updateData,
   };
 }
 export async function setFirebaseData(path: string, data: any) {
   const dbRef = ref(database, path);
-  await set(dbRef, data);
+  await safeSave(dbRef, data);
 }
 export async function getFirebaseData(path: string) {
   const dbRef = ref(database, path);
